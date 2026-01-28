@@ -12,13 +12,8 @@ body {
     background-color: white;
     padding: 2rem;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 300px;
-}
-
-h2 {
-    text-align: center;
-    color: #333;
 }
 
 .form-group {
@@ -34,11 +29,12 @@ label {
 input {
     width: 100%;
     padding: 8px;
-    box-sizing: border-box; /* Ensures padding doesn't widen the element */
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
+/* GLOBAL BUTTON STYLE */
 button {
     width: 100%;
     padding: 10px;
@@ -48,14 +44,54 @@ button {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    margin-top: 10px;
 }
 
 button:hover {
     background-color: #218838;
 }
 
+/* TOGGLE TABS CONTAINER */
+.toggle-box {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+}
+
+/* TOGGLE BUTTONS (The tabs at the top) */
+button.toggle-btn {
+    width: 50% !important;
+    background-color: transparent !important;
+    color: #666 !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important;
+    padding: 10px;
+    font-weight: bold;
+    margin-top: 0;
+}
+
+button.toggle-btn:hover {
+    background-color: #f9f9f9 !important;
+    color: #333 !important;
+}
+
+/* ACTIVE TAB STYLE */
+button.toggle-btn.active {
+    color: #28a745 !important;
+    border-bottom: 3px solid #28a745 !important;
+}
+
+/* UTILITIES */
 #message {
     margin-top: 15px;
     text-align: center;
     font-size: 14px;
+    font-weight: bold;
+}
+
+/* IMPORTANT: Hides the inactive form */
+.hidden {
+    display: none !important;
 }

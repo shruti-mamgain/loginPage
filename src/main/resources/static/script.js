@@ -1,40 +1,95 @@
-document.getElementById('signupForm').addEventListener('submit', async function(event) { // async : function takes time to execute, because response will be given by the server
-    event.preventDefault(); // Tells the browser not to refresh the page when the form is submitted
+// --- DOM ELEMENTS ---
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const loginBtn = document.getElementById('showLogin');
+const signupBtn = document.getElementById('showSignup');
+const messageElement = document.getElementById('message');
 
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const messageElement = document.getElementById('message');
+// --- TOGGLE LOGIC ---
 
+// 1. Switch to Login View
+loginBtn.addEventListener('click', () => {
+    loginForm.classList.remove('hidden');   // Show Login
+    signupForm.classList.add('hidden');     // Hide Signup
+    loginBtn.classList.add('active');       // Highlight Login Tab
+    signupBtn.classList.remove('active');   // Un-highlight Signup Tab
+    messageElement.textContent = "";        // Clear old messages
+});
+
+// 2. Switch to Sign Up View
+signupBtn.addEventListener('click', () => {
+    signupForm.classList.remove('hidden');  // Show Signup
+    loginForm.classList.add('hidden');      // Hide Login
+    signupBtn.classList.add('active');      // Highlight Signup Tab
+    loginBtn.classList.remove('active');    // Un-highlight Login Tab
+    messageElement.textContent = "";        // Clear old messages
+});
+
+// --- BACKEND CONNECTION LOGIC ---
+
+// 1. Handle Login Submission
+loginForm.addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevent page reload
 
     const data = {
-        username: username,
-        email: email,
-        password: password
+        username: document.getElementById('loginUsername').value,
+        password: document.getElementById('loginPassword').value
     };
 
+    // Send to Spring Boot Login Endpoint
+    sendRequest('http://localhost:8080/api/auth/login', data);
+});
+
+// 2. Handle Sign Up Submission
+signupForm.addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevent page reload
+
+    const data = {
+        username: document.getElementById('signupUsername').value,
+        email: document.getElementById('signupEmail').value,
+        password: document.getElementById('signupPassword').value
+    };
+
+    // Send to Spring Boot Signup Endpoint
+    sendRequest('http://localhost:8080/api/auth/signup', data);
+});
+
+// Generic function to send data to the backend
+async function sendRequest(url, data) {
+    messageElement.style.color = "#333";
+    messageElement.textContent = "Processing...";
+
     try {
-        const response = await fetch('http://localhost:8080/api/auth/signup', {  //sends a request to Spring Boot backend.
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)  //JSON.stringify converts javascript object into a simple text string that can travel over the internet.
+            body: JSON.stringify(data)
         });
 
-        const result = await response.text(); // Java backend returns a simple sentence  example : " User registered successfully!".
+        const result = await response.text();
 
-        if (response.ok) {    //checks the "status code" sent by Spring Boot.
+        if (response.ok) {
+            // Success Case
             messageElement.style.color = "green";
             messageElement.textContent = result;
-            document.getElementById('signupForm').reset();
+
+            // If sign up was successful, automatically switch to login after 1.5 seconds
+            if (url.includes("signup")) {
+                setTimeout(() => {
+                    loginBtn.click(); // Programmatically click the login tab
+                    messageElement.textContent = "Please log in with your new account.";
+                }, 1500);
+            }
         } else {
+            // Error Case (e.g., Wrong password, Username taken)
             messageElement.style.color = "red";
             messageElement.textContent = result;
         }
     } catch (error) {
         console.error('Error:', error);
         messageElement.style.color = "red";
-        messageElement.textContent = "Failed to connect to the server.";
+        messageElement.textContent = "Server connection failed. Is the backend running?";
     }
-});
+}
